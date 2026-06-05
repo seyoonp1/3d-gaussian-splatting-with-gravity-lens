@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# Large data & training artifacts (regenerate locally — not for the repo)
+data/
+outputs/
+exports/
+renders/
+third_party/
+*.ckpt
+*.ply
+*.mp4
+*.npz
+
+# Legacy gaussian ray-marcher (pre-NeRF pivot), kept locally for reference only
+blackhole/_legacy/
+
+# Logs / scratch
+*.log
+
+# Runtime artifacts (saved camera paths, videos)
+results/

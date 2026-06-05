@@ -1,0 +1,27 @@
+# One-shot install for the black-hole renderer.
+#
+#   conda create -n blackhole python=3.10 -y && conda activate blackhole
+#   export CUDA_HOME=$CONDA_PREFIX            # gsplat compiles a CUDA kernel on install
+#   pip install -r requirements.txt
+#
+# torch is pulled from the CUDA-12.4 wheel index below; if your GPU/driver needs a
+# different CUDA, change cu124 to match (and gsplat will compile against CUDA_HOME).
+
+--extra-index-url https://download.pytorch.org/whl/cu124
+
+torch==2.5.1
+torchvision
+
+nerfstudio==1.1.5      # nerfacto + ns-process-data/ns-train/ns-export + Cameras/RayBundle
+gsplat==1.4.0          # real-time gaussian-splat rasterization (live preview)
+viser==0.2.7           # browser 3D viewer / GUI
+nerfview==0.1.3        # nerfstudio-style render panel (camera keyframes)
+nerfacc==0.5.2
+
+plyfile==1.1.3         # read the ns-export gaussian-splat .ply
+imageio==2.37.3
+imageio-ffmpeg==0.6.0  # mp4 writing
+numpy==1.26.4
+
+# COLMAP (poses from images/video) is a separate native binary — install via conda:
+#   conda install -c conda-forge colmap
