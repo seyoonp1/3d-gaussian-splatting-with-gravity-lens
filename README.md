@@ -17,7 +17,7 @@ A Schwarzschild black hole appears over the 장영실 (Jang Yeong-sil) statue pl
 lensing the whole scene — rendered entirely with the curved-geodesic NeRF renderer in this
 repo (1080p, 10 s):
 
-https://github.com/seyoonp1/3d-gaussian-splatting-with-gravity-lens/raw/main/assets/demo_blackhole.mp4
+https://github.com/seyoonp1/nerf-gravitational-lensing/raw/main/assets/demo_blackhole.mp4
 
 (If the inline player doesn't load, [download the video](assets/demo_blackhole.mp4); a still
 frame is shown below.)
