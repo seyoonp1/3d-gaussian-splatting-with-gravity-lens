@@ -67,6 +67,7 @@ class NerfModel:
     model: object          # NerfactoModel (eval mode)
     device: str
     aabb: Tensor           # [2,3] scene box min/max (world)
+    cameras: object = None  # nerfstudio train Cameras (for the viewer's COLMAP frustums)
 
     @property
     def center(self):
@@ -87,8 +88,12 @@ def load_nerf(config_path: str) -> NerfModel:
         aabb = model.scene_box.aabb.to(dev).float()         # [2,3]
     except Exception:
         aabb = torch.tensor([[-1, -1, -1], [1, 1, 1]], dtype=torch.float32, device=dev)
+    try:
+        cameras = pipeline.datamanager.train_dataset.cameras   # poses for viewer frustums
+    except Exception:
+        cameras = None
     print(f"loaded nerfacto on {dev}; scene aabb {aabb.tolist()}")
-    return NerfModel(model=model, device=dev, aabb=aabb)
+    return NerfModel(model=model, device=dev, aabb=aabb, cameras=cameras)
 
 
 # ----------------------------------------------------------------------------

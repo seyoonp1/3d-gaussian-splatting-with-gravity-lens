@@ -101,6 +101,59 @@ def main():
         apply_up(up_dropdown.value)
     apply_up("pca")
 
+    # ---- COLMAP camera poses: show frustums; click one to jump the view there ---
+    # viser 0.2.7 can't live-resize a frustum, so the size slider rebuilds them.
+    import viser.transforms as vtf
+    cam_params = []          # (position, wxyz, fov, aspect) per camera
+    cam_frustums = []
+    cams = getattr(nm, "cameras", None)
+    if cams is not None:
+        flip = np.diag([1.0, -1.0, -1.0]).astype(np.float32)   # nerfstudio(OpenGL)->OpenCV
+        c2ws = cams.camera_to_worlds.cpu().numpy()             # [N,3,4]
+        fyv = cams.fy.cpu().numpy().reshape(-1)
+        Hv = cams.height.cpu().numpy().reshape(-1)
+        Wv = cams.width.cpu().numpy().reshape(-1)
+        for i in range(c2ws.shape[0]):
+            wxyz = vtf.SO3.from_matrix(c2ws[i][:3, :3] @ flip).wxyz
+            cam_params.append((c2ws[i][:3, 3], wxyz,
+                               float(2 * np.arctan(0.5 * Hv[i] / fyv[i])), float(Wv[i] / Hv[i])))
+
+    def _jump(pos, wxyz):
+        def _cb(event):
+            event.client.camera.position = pos
+            event.client.camera.wxyz = wxyz
+        return _cb
+
+    def build_frustums(scale, visible):
+        for fr in cam_frustums:
+            fr.remove()
+        cam_frustums.clear()
+        for i, (pos, wxyz, fov, asp) in enumerate(cam_params):
+            fr = server.scene.add_camera_frustum(
+                f"/colmap_cams/cam_{i:04d}", fov=fov, aspect=asp, scale=scale,
+                color=(90, 170, 255), wxyz=wxyz, position=pos, visible=visible)
+            fr.on_click(_jump(pos, wxyz))
+            cam_frustums.append(fr)
+
+    with server.gui.add_folder("COLMAP cameras"):
+        show_cams = server.gui.add_checkbox("show camera poses", initial_value=True)
+        cam_size = server.gui.add_slider("camera size", min=0.01, max=0.4, step=0.01,
+                                         initial_value=round(max(0.02, core * 0.008), 2))
+        server.gui.add_text("tip", initial_value="click a frustum to jump there", disabled=True)
+
+    if cam_params:
+        build_frustums(float(cam_size.value), True)
+        print(f"added {len(cam_frustums)} COLMAP camera frustums", flush=True)
+
+    @cam_size.on_update
+    def _(_):
+        build_frustums(float(cam_size.value), show_cams.value)
+
+    @show_cams.on_update
+    def _(_):
+        for fr in cam_frustums:
+            fr.visible = show_cams.value
+
     # ---- black-hole controls ---------------------------------------------------
     B_CRIT = 1.5 * math.sqrt(3.0)
     state = {"r_s": core * 0.05, "strength": 1.0, "busy": False,

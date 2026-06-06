@@ -11,6 +11,19 @@ field is **nerfacto**. (3D Gaussian Splatting is used only for a fast live previ
 splatting rasterizes straight rays and so cannot bend light; the lensing itself is
 done by ray-marching the continuous NeRF field.)
 
+## Demo
+
+A Schwarzschild black hole appears over the 장영실 (Jang Yeong-sil) statue plaza and grows,
+lensing the whole scene — rendered entirely with the curved-geodesic NeRF renderer in this
+repo (1080p, 10 s):
+
+https://github.com/seyoonp1/3d-gaussian-splatting-with-gravity-lens/raw/main/assets/demo_blackhole.mp4
+
+(If the inline player doesn't load, [download the video](assets/demo_blackhole.mp4); a still
+frame is shown below.)
+
+![black hole lensing the statue plaza](assets/preview.png)
+
 ## How it works
 
 Three renderers share one coordinate frame (OpenCV `c2w`, the same one gsplat and

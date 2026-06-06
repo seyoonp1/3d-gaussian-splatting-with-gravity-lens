@@ -23,3 +23,7 @@ blackhole/_legacy/
 
 # Runtime artifacts (saved camera paths, videos)
 results/
+
+# README demo assets (override the *.mp4 / renders rules)
+!assets/
+!assets/demo_blackhole.mp4
